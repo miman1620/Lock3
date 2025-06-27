@@ -1,0 +1,244 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --icp-blue: #0498EC;
+  --icp-purple: #9440FF;
+  --neon-green: #00FF9D;
+  --cyber-dark: #0A0A1A;
+  --cyber-darker: #05050F;
+  --cyber-light: #1E1E3F;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #0A0A1A 0%, #1E1E3F 100%);
+  color: white;
+  overflow-x: hidden;
+}
+
+.font-space {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-dark {
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.neon-border {
+  border: 2px solid transparent;
+  background: linear-gradient(45deg, #0498EC, #9440FF, #00FF9D) border-box;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+
+.cyber-grid {
+  background-image: 
+    linear-gradient(rgba(4,152,236,0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(4,152,236,0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #0498EC 0%, #9440FF 50%, #00FF9D 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 30px rgba(4, 152, 236, 0.5);
+  transform: translateY(-2px);
+  transition: all 0.3s ease;
+}
+
+.scan-line {
+  position: relative;
+  overflow: hidden;
+}
+
+.scan-line::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(4, 152, 236, 0.3), transparent);
+  animation: scan 3s linear infinite;
+}
+
+.hologram {
+  position: relative;
+  overflow: hidden;
+}
+
+.hologram::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 30%, 
+    rgba(4, 152, 236, 0.1) 50%, 
+    transparent 70%
+  );
+  animation: scan 4s linear infinite;
+}
+
+.ripple-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple-effect::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(4, 152, 236, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.ripple-effect:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--cyber-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #0498EC, #9440FF);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #9440FF, #00FF9D);
+}
+
+/* Loading Animation */
+.loading-dots {
+  display: inline-block;
+}
+
+.loading-dots::after {
+  content: '';
+  animation: dots 1.5s steps(5, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% { content: ''; }
+  40% { content: '.'; }
+  60% { content: '..'; }
+  80%, 100% { content: '...'; }
+}
+
+/* Typewriter Effect */
+.typewriter {
+  overflow: hidden;
+  border-right: 2px solid #0498EC;
+  white-space: nowrap;
+  animation: typewriter 4s steps(40) infinite;
+}
+
+/* Logo Animation */
+.logo-container {
+  filter: drop-shadow(0 0 10px #0498EC) drop-shadow(0 0 20px #9440FF);
+  animation: logo-glow 3s ease-in-out infinite alternate;
+}
+
+/* Particle System */
+.particle {
+  position: absolute;
+  background: radial-gradient(circle, #0498EC 0%, transparent 70%);
+  border-radius: 50%;
+  animation: particle 15s linear infinite;
+}
+
+/* 3D Transform Effects */
+.transform-3d {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.card-3d {
+  transition: transform 0.3s ease;
+}
+
+.card-3d:hover {
+  transform: rotateY(5deg) rotateX(5deg) translateZ(20px);
+}
+
+/* Voice UI Indicator */
+.voice-indicator {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #0498EC, #9440FF);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.voice-indicator:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 30px rgba(4, 152, 236, 0.5);
+}
+
+.voice-indicator.listening {
+  animation: pulse 1s infinite;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  .glass {
+    backdrop-filter: blur(5px);
+  }
+  
+  .hover-glow:hover {
+    transform: none;
+  }
+  
+  .card-3d:hover {
+    transform: none;
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "canisters": {
+    "Lock3_backend": {
+      "main": "src/Lock3_backend/main.mo",
+      "type": "motoko"
+    },
+    "Lock3_frontend": {
+      "dependencies": [
+        "Lock3_backend"
+      ],
+      "source": [
+        "src/Lock3_frontend/dist"
+      ],
+      "type": "assets",
+      "workspace": "Lock3_frontend"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
