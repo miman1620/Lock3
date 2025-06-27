@@ -1,5 +1,17 @@
 /// <reference types="vite/client" />
 
+interface ImportMetaEnv {
+  readonly DFX_NETWORK: string;
+  readonly CANISTER_ID_LOCK3_BACKEND: string;
+  readonly CANISTER_ID_LOCK3_FRONTEND: string;
+  readonly CANISTER_CANDID_PATH_LOCK3_BACKEND: string;
+  readonly CANISTER_CANDID_PATH: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
+
 declare global {
   interface Window {
     SpeechRecognition: typeof SpeechRecognition;

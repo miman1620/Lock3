@@ -10,7 +10,7 @@ import { gsap } from 'gsap';
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
-  const { isConnected, principal, balance, disconnect, icpPrice } = useWallet();
+  const { isConnected, principalText, balance, disconnect, icpPrice } = useWallet();
   const { isListening, isSupported, startListening, stopListening } = useVoice();
   const location = useLocation();
   const navRef = useRef<HTMLElement>(null);
@@ -129,7 +129,7 @@ const Navbar: React.FC = () => {
                   >
                     <div className="text-xs text-gray-400">Connected</div>
                     <div className="text-sm font-bold text-white truncate w-20">
-                      {principal?.slice(0, 8)}...
+                      {principalText?.slice(0, 8)}...
                     </div>
                   </button>
                 </div>
