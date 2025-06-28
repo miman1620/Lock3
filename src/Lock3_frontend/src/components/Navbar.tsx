@@ -10,7 +10,16 @@ import { gsap } from 'gsap';
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
-  const { isConnected, principalText, balance, disconnect, icpPrice } = useWallet();
+  const { 
+    isConnected, 
+    principalText, 
+    balance, 
+    disconnect, 
+    icpPrice, 
+    sessionTimeRemaining, 
+    isSessionExpiring,
+    refreshSession 
+  } = useWallet();
   const { isListening, isSupported, startListening, stopListening } = useVoice();
   const location = useLocation();
   const navRef = useRef<HTMLElement>(null);
@@ -123,6 +132,29 @@ const Navbar: React.FC = () => {
                     <div className="text-sm font-bold text-icp-blue">{balance.icp} ICP</div>
                     <div className="text-xs text-neon-green">{balance.ckbtc} ckBTC</div>
                   </div>
+
+                  {/* Session Status */}
+                  {sessionTimeRemaining && (
+                    <div className={`glass rounded-lg px-4 py-2 hover-glow transition-all duration-300 ${
+                      isSessionExpiring ? 'border border-yellow-500/50 bg-yellow-500/10' : ''
+                    }`}>
+                      <div className="text-xs text-gray-400">Session</div>
+                      <div className={`text-sm font-bold ${
+                        isSessionExpiring ? 'text-yellow-400' : 'text-green-400'
+                      }`}>
+                        {Math.floor(sessionTimeRemaining / (60 * 60 * 1000))}h {Math.floor((sessionTimeRemaining % (60 * 60 * 1000)) / (60 * 1000))}m
+                      </div>
+                      {isSessionExpiring && (
+                        <button
+                          onClick={refreshSession}
+                          className="text-xs text-yellow-400 hover:text-yellow-300 underline"
+                        >
+                          Extend
+                        </button>
+                      )}
+                    </div>
+                  )}
+
                   <button
                     onClick={disconnect}
                     className="glass rounded-lg px-4 py-2 hover-glow transition-all duration-300"

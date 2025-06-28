@@ -11,6 +11,7 @@ import Dashboard from './pages/Dashboard';
 import Disputes from './pages/Disputes';
 import ParticleBackground from './components/ParticleBackground';
 import VoiceAssistant from './components/VoiceAssistant';
+import SessionManager from './components/SessionManager';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
               <ParticleBackground />
               <div className="relative z-10">
                 <Navbar />
+                <SessionManager />
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/create" element={<CreateEscrow />} />
