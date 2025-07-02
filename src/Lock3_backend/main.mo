@@ -58,11 +58,11 @@ actor Lock3Backend {
     // ==================================================================================================
 
     stable var owner: Principal;
-    stable var arbitrators: Trie.Trie<Principal, Bool> = Trie.empty();
-    stable var escrows: Trie.Trie<Nat, Escrow> = Trie.empty();
-    stable var disputes: Trie.Trie<Nat, Dispute> = Trie.empty();
-    stable var next_escrow_id: Nat = 0;
-    stable var next_dispute_id: Nat = 0;
+    stable var arbitrators: Trie.Trie<Principal, Bool>;
+    stable var escrows: Trie.Trie<Nat, Escrow>;
+    stable var disputes: Trie.Trie<Nat, Dispute>;
+    stable var next_escrow_id: Nat;
+    stable var next_dispute_id: Nat;
 
     // ==================================================================================================
     // === Initialization ===
@@ -70,7 +70,12 @@ actor Lock3Backend {
 
     public func init() {
         owner := msg.caller;
+        arbitrators := Trie.empty<Principal, Bool>();
         arbitrators.put(msg.caller, true);
+        escrows := Trie.empty<Nat, Escrow>();
+        disputes := Trie.empty<Nat, Dispute>();
+        next_escrow_id := 0;
+        next_dispute_id := 0;
     };
 
     // ==================================================================================================
