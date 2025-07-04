@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Shield, Plus, Clock, Users, ArrowRight, Check, Upload, FileText } from 'lucide-react';
 import { useWallet } from './contexts/WalletContext';
+import { useEscrow, useFormatters } from './hooks/useBackend';
+import { CreateEscrowArgs } from './types/backend';
 import { gsap } from 'gsap';
 import toast from 'react-hot-toast';
 import LoadingSpinner from './components/LoadingSpinner';
@@ -20,7 +22,9 @@ const CreateEscrow: React.FC = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [gasEstimate, setGasEstimate] = useState('0.001');
-  const { isConnected, balance } = useWallet();
+  const { isConnected, principalText, balance } = useWallet();
+  const { createEscrow, loading } = useEscrow();
+  const { createAssetType, createEscrowCondition, parseAmount } = useFormatters();
   const navigate = useNavigate();
   const formRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
@@ -142,38 +146,60 @@ const CreateEscrow: React.FC = () => {
 
     setIsSubmitting(true);
     
-    // Simulate escrow creation with realistic delay
-    setTimeout(() => {
-      toast.success('Escrow created successfully!', {
-        icon: '🎉',
-        duration: 4000,
-      });
+    try {
+      // Prepare escrow arguments
+      const escrowArgs: CreateEscrowArgs = {
+        seller: formData.recipient,
+        arbitrator: formData.arbitrator || null,
+        assetType: createAssetType(formData.assetType),
+        amount: parseAmount(formData.amount),
+        description: formData.description,
+        conditions: createEscrowCondition(formData.conditions, formData.timelock),
+        metadata: [
+          ['gasEstimate', gasEstimate],
+          ['category', 'escrow'],
+          ...formData.files.map((file, index) => [`file_${index}`, file.name] as [string, string])
+        ]
+      };
+
+      // Create escrow using backend
+      const escrow = await createEscrow(escrowArgs);
       
-      // Confetti animation
-      const confetti = document.createElement('div');
-      confetti.className = 'fixed inset-0 pointer-events-none z-50';
-      confetti.innerHTML = '🎉'.repeat(50);
-      document.body.appendChild(confetti);
-      
-      gsap.fromTo(confetti.children,
-        { y: -100, opacity: 0, rotation: 0, scale: 0 },
-        { 
-          y: window.innerHeight + 100, 
-          opacity: 1, 
-          rotation: 360,
-          scale: 1,
-          duration: 3,
-          stagger: 0.1,
-          ease: 'power2.out',
-          onComplete: () => {
-            document.body.removeChild(confetti);
+      if (escrow) {
+        toast.success('Escrow created successfully!', {
+          icon: '🎉',
+          duration: 4000,
+        });
+        
+        // Confetti animation
+        const confetti = document.createElement('div');
+        confetti.className = 'fixed inset-0 pointer-events-none z-50';
+        confetti.innerHTML = '🎉'.repeat(50);
+        document.body.appendChild(confetti);
+        
+        gsap.fromTo(confetti.children,
+          { y: -100, opacity: 0, rotation: 0, scale: 0 },
+          { 
+            y: window.innerHeight + 100, 
+            opacity: 1, 
+            rotation: 360,
+            scale: 1,
+            duration: 3,
+            stagger: 0.1,
+            ease: 'power2.out',
+            onComplete: () => {
+              document.body.removeChild(confetti);
+            }
           }
-        }
-      );
-      
+        );
+        
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      toast.error('Failed to create escrow. Please try again.');
+    } finally {
       setIsSubmitting(false);
-      navigate('/dashboard');
-    }, 3000);
+    }
   };
 
   const renderStepContent = () => {

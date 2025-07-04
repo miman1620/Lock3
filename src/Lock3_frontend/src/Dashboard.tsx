@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Shield, 
@@ -13,11 +13,17 @@ import {
   Filter
 } from 'lucide-react';
 import { useWallet } from './contexts/WalletContext';
+import { useEscrow, usePlatformStats, useFormatters } from './hooks/useBackend';
+import { Escrow } from './types/backend';
 import { gsap } from 'gsap';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 const Dashboard: React.FC = () => {
-  const { isConnected, balance, icpPrice } = useWallet();
+  const { isConnected, principalText, icpPrice } = useWallet();
+  const { escrows: userEscrowsData, loadUserEscrows, loading } = useEscrow();
+  const { stats } = usePlatformStats();
+  const { formatEscrowStatus, formatAssetType, formatAmount } = useFormatters();
+  const [userEscrows, setUserEscrows] = useState<Escrow[]>([]);
   const navigate = useNavigate();
   const dashboardRef = useRef<HTMLDivElement>(null);
 
@@ -27,18 +33,27 @@ const Dashboard: React.FC = () => {
       return;
     }
 
+    // Load user escrows
+    if (principalText) {
+      loadUserEscrows(principalText);
+    }
+
     // Animate dashboard on mount
     gsap.fromTo('.dashboard-card',
       { y: 50, opacity: 0, rotationX: 15 },
       { y: 0, opacity: 1, rotationX: 0, duration: 0.8, stagger: 0.1, ease: 'power2.out' }
     );
-  }, [isConnected, navigate]);
+  }, [isConnected, navigate, principalText, loadUserEscrows]);
 
-  // Mock data
-  const stats = [
+  useEffect(() => {
+    setUserEscrows(userEscrowsData);
+  }, [userEscrowsData]);
+
+  // Calculate stats from user escrows
+  const userStats = [
     {
       title: 'Total Escrows',
-      value: '47',
+      value: userEscrows.length.toString(),
       change: '+23%',
       icon: <Shield className="h-6 w-6" />,
       color: 'from-icp-blue to-cyan-400',
@@ -46,7 +61,10 @@ const Dashboard: React.FC = () => {
     },
     {
       title: 'Active Escrows',
-      value: '12',
+      value: userEscrows.filter((e: Escrow) => 
+        formatEscrowStatus(e.status) === 'Active' || 
+        formatEscrowStatus(e.status) === 'Funded'
+      ).length.toString(),
       change: '+5',
       icon: <Clock className="h-6 w-6" />,
       color: 'from-icp-purple to-pink-400',
@@ -54,7 +72,7 @@ const Dashboard: React.FC = () => {
     },
     {
       title: 'Completed',
-      value: '35',
+      value: userEscrows.filter((e: Escrow) => formatEscrowStatus(e.status) === 'Completed').length.toString(),
       change: '+18',
       icon: <CheckCircle className="h-6 w-6" />,
       color: 'from-neon-green to-teal-400',
@@ -62,7 +80,7 @@ const Dashboard: React.FC = () => {
     },
     {
       title: 'Total Value',
-      value: `${(parseFloat(balance.icp) * icpPrice).toFixed(2)} USD`,
+      value: `${userEscrows.reduce((sum: number, e: Escrow) => sum + parseFloat(formatAmount(e.amount)), 0).toFixed(2)} ICP`,
       change: '+28%',
       icon: <TrendingUp className="h-6 w-6" />,
       color: 'from-orange-400 to-red-400',
@@ -183,7 +201,7 @@ const Dashboard: React.FC = () => {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {stats.map((stat, index) => (
+          {userStats.map((stat, index) => (
             <div key={index} className="dashboard-card glass rounded-xl p-6 hover-glow transition-all duration-300 transform-3d card-3d">
               <div className="flex items-center justify-between mb-4">
                 <div className={`p-3 rounded-xl bg-gradient-to-r ${stat.color}`}>
